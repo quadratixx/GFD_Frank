@@ -38,29 +38,6 @@ async def lfg(ctx):
 
     link = await get_vc_link(ctx, member)
     await ctx.send(link)
-    
-@bot.command(name='lfg')
-async def lfg(ctx):
-    member = ctx.author
-    voice_state = member.voice
-
-    if voice_state is None:
-        await ctx.send("You are not connected to a voice channel.")
-        return
-
-    if ctx.voice_client is not None:
-        await ctx.voice_client.disconnect()
-
-    try:
-        voice_channel = voice_state.channel
-        voice_client = await voice_channel.connect()
-
-        link = await get_vc_link(ctx, member)
-        await ctx.send(link)
-        
-    except Exception as e:
-        await ctx.send(f"An error occurred: {e}")
-        await voice_client.disconnect()
 
 # Command to show days left for Fortnite battle pass
 @client.command()
