@@ -1,40 +1,80 @@
 import discord
+import nacl
 from discord.ext import commands
 from datetime import datetime, timedelta
 
-client = commands.Bot(command_prefix="!")
+intents = discord.Intents.all()
+intents.members = True
+intents.guilds = True
+intents.messages = True
+intents.message_content = True
+
+client = commands.Bot(command_prefix="!", intents=intents)
 
 # Function to get the link to the voice channel of the user who typed the command
-def get_vc_link(member):
-    for vc in client.voice_clients:
-        if member in vc.members:
-            return vc.channel.create_invite(max_age=0)
+async def get_vc_link(ctx, member):
+    if member.voice is None or member.voice.channel is None:
+        await ctx.send("You need to join a voice channel first!")
+        return None
 
+    voice_client = await member.voice.channel.connect()
+    link = await voice_client.create_invite(max_age=86400, max_uses=0, unique=Tr>
+    await voice_client.disconnect()
+
+    return link.url
+    
 # Command to show LFG message
-@client.command()
+@client.command(name="lfg")
 async def lfg(ctx):
     member = ctx.author
-    game = member.activity.name if member.activity else "unknown game"
-    link = get_vc_link(member)
-    if link:
-        response = f"{member} is currently playing {game} and would like you to join them in {link}!"
-        await ctx.send(response)
-    else:
-        await ctx.send("You need to be in a voice channel to use this command.")
+    if member.voice is None or member.voice.channel is None:
+        await ctx.send("You need to join a voice channel first!")
+        return
+
+    voice_channel = member.voice.channel
+    voice_client = ctx.voice_client
+    if voice_client is None:
+        voice_client = await voice_channel.connect()
+
+    link = await get_vc_link(ctx, member)
+    await ctx.send(link)
+    
+@bot.command(name='lfg')
+async def lfg(ctx):
+    member = ctx.author
+    voice_state = member.voice
+
+    if voice_state is None:
+        await ctx.send("You are not connected to a voice channel.")
+        return
+
+    if ctx.voice_client is not None:
+        await ctx.voice_client.disconnect()
+
+    try:
+        voice_channel = voice_state.channel
+        voice_client = await voice_channel.connect()
+
+        link = await get_vc_link(ctx, member)
+        await ctx.send(link)
+        
+    except Exception as e:
+        await ctx.send(f"An error occurred: {e}")
+        await voice_client.disconnect()
 
 # Command to show days left for Fortnite battle pass
 @client.command()
 async def fortnite(ctx):
-    end_date = datetime(2022, 6, 6)  # replace with the end date of the current Fortnite battle pass
+    end_date = datetime(2022, 6, 6)  # replace with the end date of the current >
     days_left = (end_date - datetime.now()).days
-    await ctx.send(f"There are {days_left} days left for the current Fortnite battle pass.")
+    await ctx.send(f"There are {days_left} days left for the current Fortnite ba>
 
 # Command to show days left for Call of Duty battle pass
 @client.command()
 async def cod(ctx):
-    end_date = datetime(2022, 12, 5)  # replace with the end date of the current Call of Duty battle pass
+    end_date = datetime(2022, 12, 5)  # replace with the end date of the current>
     days_left = (end_date - datetime.now()).days
-    await ctx.send(f"There are {days_left} days left for the current Call of Duty battle pass.")
+    await ctx.send(f"There are {days_left} days left for the current Call of Dut>
 
 # Run the bot
 client.run("YOUR_DISCORD_BOT_TOKEN")
