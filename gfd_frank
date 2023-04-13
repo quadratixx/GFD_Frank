@@ -17,11 +17,12 @@ async def get_vc_link(ctx, member):
         await ctx.send("You need to join a voice channel first!")
         return None
 
+    voice_channel = member.voice.channel
     voice_client = ctx.voice_client
     if voice_client is None:
-        voice_client = await member.voice.channel.connect()
+        voice_client = await voice_channel.connect()
 
-    link = await voice_client.create_invite(max_age=86400, max_uses=0, unique=True)
+    link = await voice_channel.create_invite(max_age=86400, max_uses=0, unique=True)
     await voice_client.disconnect()
 
     return link.url
