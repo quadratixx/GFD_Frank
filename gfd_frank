@@ -18,7 +18,7 @@ async def get_vc_link(ctx, member):
         return None
 
     voice_client = await member.voice.channel.connect()
-    link = await voice_client.create_invite(max_age=86400, max_uses=0, unique=Tr>
+    link = await voice_client.create_invite(max_age=86400, max_uses=0, unique=True)
     await voice_client.disconnect()
 
     return link.url
@@ -44,14 +44,14 @@ async def lfg(ctx):
 async def fortnite(ctx):
     end_date = datetime(2022, 6, 6)  # replace with the end date of the current >
     days_left = (end_date - datetime.now()).days
-    await ctx.send(f"There are {days_left} days left for the current Fortnite ba>
+    await ctx.send(f"There are {days_left} days left for the current Fortnite battle pass.")
 
 # Command to show days left for Call of Duty battle pass
 @client.command()
 async def cod(ctx):
     end_date = datetime(2022, 12, 5)  # replace with the end date of the current>
     days_left = (end_date - datetime.now()).days
-    await ctx.send(f"There are {days_left} days left for the current Call of Dut>
+    await ctx.send(f"There are {days_left} days left for the current Call of Duty battle pass.")
 
 # Run the bot
 client.run("YOUR_DISCORD_BOT_TOKEN")
