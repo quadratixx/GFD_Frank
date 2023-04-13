@@ -1,0 +1,40 @@
+import discord
+from discord.ext import commands
+from datetime import datetime, timedelta
+
+client = commands.Bot(command_prefix="!")
+
+# Function to get the link to the voice channel of the user who typed the command
+def get_vc_link(member):
+    for vc in client.voice_clients:
+        if member in vc.members:
+            return vc.channel.create_invite(max_age=0)
+
+# Command to show LFG message
+@client.command()
+async def lfg(ctx):
+    member = ctx.author
+    game = member.activity.name if member.activity else "unknown game"
+    link = get_vc_link(member)
+    if link:
+        response = f"{member} is currently playing {game} and would like you to join them in {link}!"
+        await ctx.send(response)
+    else:
+        await ctx.send("You need to be in a voice channel to use this command.")
+
+# Command to show days left for Fortnite battle pass
+@client.command()
+async def fortnite(ctx):
+    end_date = datetime(2022, 6, 6)  # replace with the end date of the current Fortnite battle pass
+    days_left = (end_date - datetime.now()).days
+    await ctx.send(f"There are {days_left} days left for the current Fortnite battle pass.")
+
+# Command to show days left for Call of Duty battle pass
+@client.command()
+async def cod(ctx):
+    end_date = datetime(2022, 12, 5)  # replace with the end date of the current Call of Duty battle pass
+    days_left = (end_date - datetime.now()).days
+    await ctx.send(f"There are {days_left} days left for the current Call of Duty battle pass.")
+
+# Run the bot
+client.run("YOUR_DISCORD_BOT_TOKEN")
